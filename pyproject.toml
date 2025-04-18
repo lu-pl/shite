@@ -1,0 +1,15 @@
+[project]
+name = "shite"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "lodkit>=0.2.7",
+    "pyshacl>=0.30.1",
+    "pytest>=8.3.5",
+    "rdflib>=7.1.4",
+]

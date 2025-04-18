@@ -1,0 +1,113 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix shite: <https://github.com/lu-pl/shite#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+
+#### terms
+
+shite:if a rdf:Property ;
+    rdfs:label "if"@en ;
+    rdfs:comment "A property representing the conditional statement 'if' in the shite macro language"@en ;
+    rdfs:isDefinedBy shite: .
+
+shite:then a rdf:Property ;
+    rdfs:label "then"@en ;
+    rdfs:comment "A property representing the conditional statement 'then' in the shite macro language"@en ;
+    rdfs:isDefinedBy shite: .
+
+shite:else a rdf:Property ;
+    rdfs:label "else"@en ;
+    rdfs:comment "A property representing the conditional statement 'else' in the shite macro language"@en ;
+    rdfs:isDefinedBy shite: .
+
+#### grammar
+
+# todo: check againt SHACL Shapes definitio: https://www.w3.org/TR/shacl/#shapes
+shite:ShiteTargetSubjectConstraint a sh:NodeShape ;
+    rdfs:comment "Constraint ensuring that the subject of a 'shite:if' property is either a sh:NodeShape or is related to at least one sh:property path."@en ;
+    sh:targetSubjectsOf shite:if ;
+    sh:or (
+        [sh:class sh:NodeShape]
+        [
+            sh:property [
+                sh:path [sh:inversePath sh:property] ;
+                # todo: maxCount?
+                sh:minCount 1
+            ]
+        ]
+    ) .
+
+shite:ShiteIfThenShape a sh:NodeShape ;
+    rdfs:comment "Shape defining the structure of conditional constraints requiring both 'if' and 'then' properties, with exactly one of each."@en ;
+    sh:targetSubjectsOf shite:if, shite:then ;
+    sh:property [
+        sh:path shite:if ;
+        sh:minCount 1 ;
+        sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path shite:then ;
+        sh:minCount 1 ;
+        sh:maxCount 1
+    ] .
+
+shite:ShiteIfThenElseShape a sh:NodeShape ;
+    rdfs:comment "Shape extending the if-then pattern to include an 'else' branch, requiring conformance to the ShiteIfThenShape and exactly one 'else' property."@en ;
+    sh:targetSubjectsOf shite:else ;
+    sh:node shite:ShiteIfThenShape ;
+    sh:property [
+        sh:path shite:else ;
+        sh:minCount 1 ;
+        sh:maxCount 1
+    ] .
+
+
+#### macro expander
+
+shite:PrefixDeclarations
+   sh:declare [
+     sh:prefix "sh" ;
+     sh:namespace "http://www.w3.org/ns/shacl#"
+   ] ;
+   sh:declare [
+     sh:prefix "shite" ;
+     sh:namespace "https://github.com/lu-pl/shite#"
+   ] .
+
+shite:ShiteIfThenMacroExpander a sh:NodeShape ;
+      rdfs:comment "Macro expander for shite:if/shite-then."@en ;
+      sh:targetSubjectsOf shite:if ;
+      sh:rule [
+          a sh:SPARQLRule ;
+          sh:condition shite:ShiteIfThenShape ;
+          sh:prefixes shite:PrefixDeclarations ;
+          sh:construct
+          """
+          construct {
+              $this sh:or ( [sh:not ?ifShape] ?thenShape ) .
+          }
+          where {
+               $this shite:if ?ifShape ;
+                     shite:then ?thenShape .
+          }
+          """
+      ] .
+
+shite:ShiteElseMacroExpander a sh:NodeShape ;
+    rdfs:comment "Macro expander for shite:else."@en ;
+    sh:targetSubjectsOf shite:else ;
+    sh:rule [
+        a sh:SPARQLRule ;
+    sh:condition shite:ShiteIfThenElseShape ;
+    sh:prefixes shite:PrefixDeclarations ;
+    sh:construct
+    """
+    construct {
+        $this sh:or (?ifShape ?elseShape)}
+    where {
+        $this shite:if ?ifShape ;
+              shite:else ?elseShape .
+    }
+    """
+] .
