@@ -94,3 +94,36 @@ ex:Shape a sh:NodeShape ;
 		]
 	) .
 ```
+
+The expanded data graph can then be used as a shapes graph to validate another data graph.
+
+According to the above expansion, the following validates
+
+```turtle
+<urn:target> <urn:x> "literal" ;
+	<urn:y> "other literal" .
+```
+
+```turtle
+<urn:target> <urn:z> "yet another literal" .
+```
+
+```turtle
+<urn:target> <urn:y> "other liteal" ;
+	<urn:z> "yet another literal" .
+```
+
+while this does not pass validation:
+
+```turtle
+<urn:target> <urn:x> "literal" .
+```
+
+```turtle
+<urn:target> <urn:y> "other literal" .
+```
+
+```turtle
+<urn:target> <urn:x> "literal" ;
+	<urn:z> "yet another literal" .
+```
