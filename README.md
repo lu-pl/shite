@@ -66,7 +66,7 @@ ex:Shape a sh:NodeShape ;
 					sh:minCount 1 ;
 					sh:maxCount 1 ;
 					sh:path <urn:x>
-				]
+					]
 			]
 		]
 		[
@@ -74,7 +74,7 @@ ex:Shape a sh:NodeShape ;
 				sh:minCount 1 ;
 				sh:maxCount 1 ;
 				sh:path <urn:y>
-			]
+				]
 		]
 	),
 	(
