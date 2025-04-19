@@ -4,7 +4,7 @@
 
 The *acronym* `shite` stands for **SH**acle **I**f **T**hen **E**lse. If you read it as an *apronym*, that's on you. 🤭
 
-### Concept
+## Concept
 
 `shite` defines a meta-shapes graph that is meant to be run against a shapes graph by a SHACL processor. Note that `shite` requires a SHACL processor that supports `sh:SPARQLRule` from [SHACL Advanced Features](https://www.w3.org/TR/shacl-af/#rules).
 
@@ -15,6 +15,8 @@ The general  idea of `shite` is to introduce a vocabulary for `if-then-else` tha
 1. conditional terms `shite:if`, `shite:then` and `shite:else`
 2. a grammar for if-then-else enforced by SHACL shapes
 3. macro-expander shapes that transform `shite` terms into `sh:and`/`sh:or`/`sh:not` constructs
+
+## Example
 
 The following SHACL shapes graph uses `shite` terms to define conditional constraints such that, if the target node has `<urn:x>` asserted about it, it must also have `<urn:y>` asserted about it; else, it must have `<urn:z>` asserted about it.
 
@@ -113,7 +115,7 @@ According to the above expansion, the following validates
 	<urn:z> "yet another literal" .
 ```
 
-while this does not pass validation:
+while the triples below do not pass validation:
 
 ```turtle
 <urn:target> <urn:x> "literal" .
